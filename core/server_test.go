@@ -1,7 +1,8 @@
-package server
+package core
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 	"strings"
 	"testing"
@@ -9,10 +10,27 @@ import (
 )
 
 func TestStartServer(t *testing.T) {
-	port := "5433"
+	port := "5435"
 	go func() {
-		err := StartServer(port, func(bytes []byte) []byte {
-			return bytes
+		err := StartServer(port, func(conn net.Conn) {
+			buf := make([]byte, 1024)
+
+			for {
+				n, err := conn.Read(buf)
+
+				if err != nil {
+					if err.Error() != "EOF" {
+						fmt.Printf("Error reading from client: %v\n", err)
+					}
+					break // Exit the loop if there's an error or EOF
+				}
+
+				_, err = conn.Write(buf[:n])
+
+				if err != nil {
+					t.Errorf("Error writing to client: %v\n", err)
+				}
+			}
 		})
 
 		if err != nil {
