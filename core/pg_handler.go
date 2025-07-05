@@ -17,8 +17,6 @@ func RequestHandler(clientConn net.Conn) {
 		return
 	}
 
-	defer pgServerConn.Close()
-
 	var wg sync.WaitGroup
 	wg.Add(2)
 
