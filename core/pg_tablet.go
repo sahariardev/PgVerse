@@ -17,6 +17,14 @@ type TabletConfig struct {
 	BackendDB  string
 }
 
+func (t *Tablet) ExecuteQuery(ctx context.Context, sql string) (pgx.Rows, error) {
+	rows, err := t.Pool.Query(ctx, sql)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to execute query: %v", err)
+	}
+	return rows, nil
+}
+
 func NewTablet(config TabletConfig) (*Tablet, error) {
 	pool, err := pgxpool.New(context.Background(), config.BackendDB)
 	if err != nil {
@@ -27,12 +35,4 @@ func NewTablet(config TabletConfig) (*Tablet, error) {
 		Config: config,
 		Pool:   pool,
 	}, nil
-}
-
-func (t *Tablet) ExecuteQuery(ctx context.Context, sql string) (pgx.Rows, error) {
-	rows, err := t.Pool.Query(ctx, sql)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to execute query: %v", err)
-	}
-	return rows, nil
 }
