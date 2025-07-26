@@ -10,7 +10,7 @@ type ChunkReader struct {
 	writePointer int
 }
 
-func (r *ChunkReader) Nex(n int) ([]byte, error) {
+func (r *ChunkReader) Next(n int) ([]byte, error) {
 	if r.readPointer+n <= r.writePointer {
 		buf := r.buffer[r.readPointer : r.readPointer+n]
 		r.readPointer += n
